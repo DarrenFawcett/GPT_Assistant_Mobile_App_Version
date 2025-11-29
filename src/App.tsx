@@ -2,6 +2,7 @@
 import { useState } from "react";
 import BottomControls from "./components/BottomPannel/BottomControls";
 import type { KaiOrbMode } from "./components/BottomPannel/KaiOrb";
+import { Header } from "./components/header/Header";
 
 export default function App() {
   const [mode, setMode] = useState<KaiOrbMode>("idle");
@@ -16,9 +17,9 @@ export default function App() {
   return (
     <div className="h-screen w-screen flex flex-col bg-black">
 
-      {/* TOP — 20% */}
+      {/* TOP — 12% */}
       <div className="h-[12vh] bg-gradient-to-b from-purple-900/30 to-transparent border-b-8 border-purple-500 flex items-center justify-center">
-        <h1 className="text-6xl font-bold text-white">TOP (12%)</h1>
+        <Header />
       </div>
 
       {/* MIDDLE — CHAT AREA */}
@@ -26,7 +27,7 @@ export default function App() {
         <h1 className="text-6xl font-bold text-white">MIDDLE (CHAT)</h1>
       </div>
 
-      {/* BOTTOM — 25% — WITH YOUR ORB + INPUT */}
+      {/* BOTTOM — 28% — WITH YOUR ORB + INPUT */}
       <div className="h-[28vh] border-t-8 border-t-green-500 relative bg-black/50">
         <BottomControls
           mode={mode}
