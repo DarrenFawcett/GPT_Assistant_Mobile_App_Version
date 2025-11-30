@@ -1,8 +1,9 @@
-// src/App.tsx — FINAL LAYOUT: TOP 20%, MIDDLE CHAT, BOTTOM 25% WITH CONTROLS
+// src/App.tsx
 import { useState } from "react";
 import BottomControls from "./components/BottomPannel/BottomControls";
 import type { KaiOrbMode } from "./components/BottomPannel/KaiOrb";
-import { Header } from "./components/header/Header";
+import { Header } from "./components/HeaderPannel/Header";
+import ChatContainer from "./components/MiddlePannel/ChatContainer";
 
 export default function App() {
   const [mode, setMode] = useState<KaiOrbMode>("idle");
@@ -15,20 +16,35 @@ export default function App() {
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-black">
+    <div className="h-screen w-screen flex flex-col bg-black overflow-hidden">
 
-      {/* TOP — 12% */}
+      {/* TOP 12% */}
       <div className="h-[12vh] bg-gradient-to-b from-purple-900/30 to-transparent border-b-8 border-purple-500 flex items-center justify-center">
         <Header />
       </div>
 
-      {/* MIDDLE — CHAT AREA */}
-      <div className="flex-1 bg-gradient-to-b from-blue-950/30 to-black border-x-8 border-x-cyan-500 flex items-center justify-center">
-        <h1 className="text-6xl font-bold text-white">MIDDLE (CHAT)</h1>
-      </div>
+      {/* MIDDLE — CHAT */}
+      <ChatContainer 
+        messages={[
+          { role: "assistant", text: "Hey! I’m kAI — your cosmic assistant. What’s good today?" },
+          { role: "user", text: "Set reminder: call Mom at 3pm" },
+          { role: "assistant", text: "Done. Reminder locked in for 3:00 PM — “Call Mom”. I’ll ping you at 2:55" },
+          { role: "user", text: "You’re a legend" },
+          { role: "assistant", text: "Hey! I’m kAI — your cosmic assistant. What’s good today?" },
+          { role: "user", text: "Set reminder: call Mom at 3pm" },
+          { role: "assistant", text: "Done. Reminder locked in for 3:00 PM — “Call Mom”. I’ll ping you at 2:55" },
+          { role: "user", text: "You’re a legend" },
+          { role: "user", text: "You’re a legend" },
+          { role: "assistant", text: "Hey! I’m kAI — your cosmic assistant. What’s good today?" },
+          { role: "user", text: "Set reminder: call Mom at 3pm" },
+          { role: "assistant", text: "Done. Reminder locked in for 3:00 PM — “Call Mom”. I’ll ping you at 2:55" },
+          { role: "user", text: "You’re a legend" },
+        ]}
+        isThinking={false}
+      />
 
-      {/* BOTTOM — 28% — WITH YOUR ORB + INPUT */}
-      <div className="h-[28vh] border-t-8 border-t-green-500 relative bg-black/50">
+      {/* BOTTOM 28% */}
+      <div className="h-[28vh]  relative bg-black/50">
         <BottomControls
           mode={mode}
           setMode={setMode}
