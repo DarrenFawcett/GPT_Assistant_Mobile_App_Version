@@ -35,7 +35,7 @@ export default function BottomControls({
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && onSend()}
           placeholder="Ask anything..."
-          className="w-[90vw] max-w-3xl bg-black/60 backdrop-blur-3xl rounded-full px-10 py-8 text-white text-2xl placeholder-gray-500 shadow-2xl ring-4 ring-cyan-400/20 focus:outline-none focus:ring-cyan-400/60 transition-all duration-500"
+          className="w-[90vw] max-w-3xl bg-black/60 backdrop-blur-3xl rounded-full px-10 py-8 text-white text-3xl placeholder-gray-500 shadow-2xl ring-4 ring-cyan-400/20 focus:outline-none focus:ring-cyan-400/60 transition-all duration-500"
           style={{
             boxShadow: `0 0 80px rgba(34, 211, 238, 0.3), 0 0 120px rgba(168, 85, 247, 0.2), inset 0 2px 20px rgba(255,255,255,0.05)`,
           }}

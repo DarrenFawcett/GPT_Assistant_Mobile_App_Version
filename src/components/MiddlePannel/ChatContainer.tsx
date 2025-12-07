@@ -31,7 +31,7 @@ export default function ChatContainer({
   return (
     <div className="relative flex-1 overflow-hidden">
       <div
-        className="absolute inset-0 overflow-y-auto px-8 pt-10 pb-44 no-scrollbar"
+        className="absolute inset-0 overflow-y-auto px-12 pt-10 pb-44 no-scrollbar"
         style={{
           scrollbarWidth: "none", // Firefox
           msOverflowStyle: "none", // IE / Edge
@@ -54,7 +54,7 @@ export default function ChatContainer({
                 className={isUser ? "flex justify-end" : "flex justify-start"}
               >
                 <div
-                  className={`relative max-w-lg px-8 py-6 rounded-3xl text-2xl font-medium leading-snug
+                  className={`relative max-w-lg px-8 py-6 rounded-3xl text-3xl font-medium leading-snug
                     shadow-2xl backdrop-blur-xl border border-white/10
                     ${
                       isUser
