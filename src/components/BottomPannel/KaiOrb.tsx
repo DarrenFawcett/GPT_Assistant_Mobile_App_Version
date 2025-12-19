@@ -1,4 +1,4 @@
-// src/components/KaiOrb.tsx — FINAL. NO MORE TOUCHING. EVER.
+// src/components/BottomPannel/KaiOrb.tsx — FINAL. FOREVER.
 import { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Sphere, MeshDistortMaterial } from '@react-three/drei';
@@ -22,45 +22,52 @@ export function KaiOrb({ mode, onPressStart, onPressEnd, onTap }: KaiOrbProps) {
 
   const HOLD_DELAY = 150;
 
-  // src/components/KaiOrb.tsx — FINAL + CLEAN DEBUG LOGS
-const handleDown = () => {
-  wasLongPress.current = false;
+  const handleDown = () => {
+    wasLongPress.current = false;
 
-  holdTimer.current = setTimeout(() => {
-    wasLongPress.current = true;
-    console.log('Orb: LONG HOLD → LISTENING MODE ACTIVATED');
-    onPressStart();
-  }, HOLD_DELAY);
-};
+    holdTimer.current = setTimeout(() => {
+      wasLongPress.current = true;
+      onPressStart(); // → starts voice in BottomControls
+    }, HOLD_DELAY);
+  };
 
-const handleUp = () => {
-  if (holdTimer.current) clearTimeout(holdTimer.current);
+  const handleUp = () => {
+    if (holdTimer.current) clearTimeout(holdTimer.current);
 
-  if (!wasLongPress.current) {
-    console.log('Orb: QUICK TAP → SENDING');
-    onTap?.();
-  } else {
-    console.log('Orb: Hold released → back to idle');
-  }
+    if (!wasLongPress.current && onTap) {
+      onTap(); // quick tap = send
+    }
 
-  onPressEnd();
-};
+    onPressEnd();           // ← ALWAYS end (stops voice)
+    wasLongPress.current = false;
+  };
 
-const handleLeave = () => {
-  if (holdTimer.current) {
-    clearTimeout(holdTimer.current);
-  }
-  onPressEnd();
-};
-  useEffect(() => () => holdTimer.current && clearTimeout(holdTimer.current), []);
+  const handleLeaveOrCancel = () => {
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+    }
+
+    // Finger slipped off orb? Still stop everything
+    onPressEnd();
+    wasLongPress.current = false;
+  };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (holdTimer.current) clearTimeout(holdTimer.current);
+    };
+  }, []);
 
   useFrame((state) => {
     const t = state.clock.getElapsedTime();
 
-    // HALO
+    // HALO PULSE
     if (haloRef.current) {
-      const target = mode === 'sending' ? 2.8 : mode === 'listening' ? 1.9 : 1.45;
-      haloRef.current.scale.setScalar(THREE.MathUtils.lerp(haloRef.current.scale.x, target, 0.2));
+      const targetScale = mode === 'sending' ? 2.8 : mode === 'listening' ? 1.9 : 1.45;
+      haloRef.current.scale.setScalar(
+        THREE.MathUtils.lerp(haloRef.current.scale.x, targetScale, 0.2)
+      );
       (haloRef.current.material as any).opacity = THREE.MathUtils.lerp(
         (haloRef.current.material as any).opacity,
         mode === 'sending' ? 0.9 : mode === 'listening' ? 0.6 : 0.22,
@@ -68,41 +75,40 @@ const handleLeave = () => {
       );
     }
 
-    // CORE BREATHING
+    // CORE BREATHE
     if (coreRef.current) {
       coreRef.current.rotation.y += 0.004;
-      const breathe = mode === 'listening'
-        ? 1 + Math.sin(t * 4) * 0.07
-        : mode === 'sending'
-        ? 1.38 + Math.sin(t * 22) * 0.2
-        : 1 + Math.sin(t * 1.3) * 0.045;
-      coreRef.current.scale.setScalar(THREE.MathUtils.lerp(coreRef.current.scale.x, breathe, 0.24));
+      const breatheScale =
+        mode === 'listening'
+          ? 1 + Math.sin(t * 4) * 0.07
+          : mode === 'sending'
+          ? 1.38 + Math.sin(t * 22) * 0.2
+          : 1 + Math.sin(t * 1.3) * 0.045;
+
+      coreRef.current.scale.setScalar(
+        THREE.MathUtils.lerp(coreRef.current.scale.x, breatheScale, 0.24)
+      );
     }
 
-    // MATERIAL — COLD METALLIC STEEL PERFECTION
+    // MATERIAL — COLD CYAN STEEL GOD MODE
     if (matRef.current) {
       const m = matRef.current;
-
-      m.color.set('#2d3748');           // cold chrome-steel base
-      m.emissive.set('#0891b2');        // deep cyan glow (no baby blue)
-      m.emissiveIntensity = mode === 'listening' ? 3.4 : mode === 'sending' ? 18 : 0.95;
+      m.color.set('#2d3748');
+      m.emissive.set('#0891b2');
       m.metalness = mode === 'listening' ? 0.72 : mode === 'sending' ? 0.88 : 0.58;
       m.roughness = mode === 'listening' ? 0.10 : mode === 'sending' ? 0.04 : 0.16;
       m.distort = mode === 'listening' ? 0.44 : mode === 'sending' ? 0.54 : 0.20;
 
-      // Subtle idle life
       if (mode === 'idle' || mode === 'text') {
-        const idlePulse = Math.sin(t * 1.2) * 0.15 + 0.85;
-        m.emissiveIntensity = 0.85 + idlePulse * 0.25;
+        const pulse = Math.sin(t * 1.2) * 0.15 + 0.85;
+        m.emissiveIntensity = 0.85 + pulse * 0.25;
       }
 
-      // Listening pulse
       if (mode === 'listening') {
         const pulse = (Math.sin(t * 3.4) + 1) / 2;
         m.emissiveIntensity = 2.8 + pulse * 1.6;
       }
 
-      // Sending flash
       if (mode === 'sending') {
         const flash = (Math.sin(t * 38) + 1) / 2;
         m.emissive.set(flash > 0.7 ? '#ffffff' : '#0891b2');
@@ -113,6 +119,7 @@ const handleLeave = () => {
 
   return (
     <>
+      {/* Halo Glow */}
       <Sphere ref={haloRef} args={[1.6, 128, 128]}>
         <meshBasicMaterial
           color="#0891b2"
@@ -123,18 +130,20 @@ const handleLeave = () => {
         />
       </Sphere>
 
+      {/* Main Orb */}
       <Sphere
         ref={coreRef}
         args={[1.8, 256, 256]}
         onPointerDown={handleDown}
         onPointerUp={handleUp}
-        onPointerLeave={handleLeave}
-        onPointerCancel={handleLeave}
+        onPointerLeave={handleLeaveOrCancel}
+        onPointerCancel={handleLeaveOrCancel}
+        onPointerMove={(e) => e.stopPropagation()} // prevents parent canvas drag
       >
         <MeshDistortMaterial
           ref={matRef}
-          color="#2d3748"            // cold metallic steel
-          emissive="#0891b2"         // deep cyan (zero baby blue)
+          color="#2d3748"
+          emissive="#0891b2"
           emissiveIntensity={0.95}
           roughness={0.16}
           metalness={0.58}

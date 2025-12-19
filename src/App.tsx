@@ -1,58 +1,61 @@
 // src/App.tsx
-import { useState } from "react";
 import BottomControls from "./components/BottomPannel/BottomControls";
-import type { KaiOrbMode } from "./components/BottomPannel/KaiOrb";
 import { Header } from "./components/HeaderPannel/Header";
 import ChatContainer from "./components/MiddlePannel/ChatContainer";
+import { useChat } from "./hooks/useChat";
 
-type Message = { role: "user" | "assistant"; text: string };
+// 🔥 DEV MODE FLAG
+const DEV_MODE = true;
 
 export default function App() {
-  const [mode, setMode] = useState<KaiOrbMode>("idle");
-  const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", text: "Hey! I’m kAI — your cosmic assistant. What’s good today?" }
-  ]);
 
-  const handleSend = () => {
-    if (!input.trim()) return;
+  // ✅ API TARGET
+  const API_URL = "https://yh1d17lvvk.execute-api.eu-west-2.amazonaws.com/chat";
 
-    // 1. Add user message
-    const userMsg: Message = { role: "user", text: input.trim() };
-    setMessages((prev) => [...prev, userMsg]);
+  // ✅ HOOKS MUST ALWAYS RUN (NO CONDITIONS)
+  const chat = useChat(API_URL, () => undefined);
 
-    // 2. Clear input
-    setInput("");
+  // 🚫 AUTH IS COMPLETELY SKIPPED IN DEV MODE
+  if (!DEV_MODE) {
+    return <div className="text-white">Prod mode not enabled</div>;
+  }
 
-    // 3. Simulate assistant reply (remove this later when you connect real AI)
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", text: "I'm alive! You said: " + userMsg.text },
-      ]);
-    }, 800);
-  };
-
+  // ✅ UI
   return (
-    <div className="h-screen w-screen flex flex-col bg-black overflow-hidden">
-      {/* HEADER */}
-      <div className="h-[12vh] bg-gradient-to-b from-purple-900/30 to-transparent border-b-8 border-purple-500 flex items-center justify-center">
+    <div className="fixed inset-0 flex flex-col bg-black overflow-hidden">
+
+      {/* ---------- FIXED HEADER ---------- */}
+      <header
+        className="fixed top-0 left-0 right-0 h-[12vh] z-50
+                   bg-gradient-to-b from-purple-900/30 to-transparent
+                   border-b-8 border-purple-500
+                   flex items-center justify-center"
+      >
         <Header />
-      </div>
+      </header>
 
-      {/* CHAT — now passes real dynamic messages */}
-      <ChatContainer messages={messages} isThinking={false} />
-
-      {/* BOTTOM */}
-      <div className="h-[28vh] relative bg-black/50">
-        <BottomControls
-          mode={mode}
-          setMode={setMode}
-          inputValue={input}
-          setInputValue={setInput}
-          onSend={handleSend}   // ← this now actually does something
+      {/* ---------- SCROLLABLE CHAT ---------- */}
+      <main
+        className="absolute top-[12vh] bottom-[28vh] left-0 right-0
+                   overflow-y-auto overflow-x-hidden"
+      >
+        <ChatContainer
+          messages={chat.messages}
+          isThinking={chat.mode === "text"}
         />
-      </div>
+      </main>
+
+      {/* ---------- BOTTOM CONTROLS ---------- */}
+      <footer className="fixed bottom-0 left-0 right-0 h-[28vh] z-50 bg-black/50">
+        <BottomControls
+          mode={chat.mode}
+          setMode={chat.setMode}
+          inputValue={chat.input}
+          setInputValue={chat.setInput}
+          onSend={chat.sendMessage}
+          onImageSelect={() => {}}
+        />
+      </footer>
     </div>
   );
 }

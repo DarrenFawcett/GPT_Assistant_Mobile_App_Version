@@ -11,9 +11,11 @@
   "dependencies": {
     "@react-three/drei": "^9.105.2",
     "@react-three/fiber": "^8.17.7",
+    "oidc-client-ts": "^3.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^10.1.0",
+    "react-oidc-context": "^3.3.0",
     "three": "^0.156.1"
   },
   "devDependencies": {
@@ -22,6 +24,7 @@
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.6.3",
-    "vite": "^5.4.8"
+    "vite": "^5.4.8",
+    "vite-plugin-pwa": "^1.2.0"
   }
 }
