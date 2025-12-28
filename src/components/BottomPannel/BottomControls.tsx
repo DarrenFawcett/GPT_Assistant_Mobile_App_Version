@@ -26,6 +26,12 @@ export default function BottomControls({
   onImageSelect,                        // ← RECEIVE IMAGE FROM ICONS
 }: Props) {
   const { isListening, transcript, startListening, stopListening } = useVoice();
+  
+  useEffect(() => {
+  if (transcript) {
+    setInputValue(transcript);
+  }
+}, [transcript, setInputValue]);
 
 
   return (
@@ -71,10 +77,12 @@ export default function BottomControls({
               <KaiOrb
                 mode={mode}
                 onPressStart={() => {
+                  setMode("listening");   // 👈 THIS IS THE KEY
                   startListening();
                 }}
                 onPressEnd={() => {
                   stopListening();
+                  setMode("idle");        // 👈 AND THIS
                 }}
                 onTap={() => {
                   if (inputValue || transcript) {
@@ -82,7 +90,6 @@ export default function BottomControls({
                   }
                 }}
               />
-
 
               <VoiceWaveform isListening={isListening} position={[0, 1.0, 0]} />
             </Canvas>

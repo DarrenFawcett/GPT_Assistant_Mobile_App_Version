@@ -10,7 +10,7 @@ const DEV_MODE = true;
 export default function App() {
 
   // ✅ API TARGET
-  const API_URL = "https://yh1d17lvvk.execute-api.eu-west-2.amazonaws.com/chat";
+  const API_URL = "https://z3llwvwlwb.execute-api.eu-west-2.amazonaws.com/router";
 
   // ✅ HOOKS MUST ALWAYS RUN (NO CONDITIONS)
   const chat = useChat(API_URL, () => undefined);

@@ -27,20 +27,26 @@ export function KaiOrb({ mode, onPressStart, onPressEnd, onTap }: KaiOrbProps) {
 
     holdTimer.current = setTimeout(() => {
       wasLongPress.current = true;
-      onPressStart(); // → starts voice in BottomControls
+      onPressStart(); // 🔥 mic starts ONLY after hold delay
     }, HOLD_DELAY);
   };
+
 
   const handleUp = () => {
     if (holdTimer.current) clearTimeout(holdTimer.current);
 
-    if (!wasLongPress.current && onTap) {
-      onTap(); // quick tap = send
+    if (!wasLongPress.current) {
+      // TAP
+      onTap?.();
+    } else {
+      // HOLD finished
+      onPressEnd();
     }
 
-    onPressEnd();           // ← ALWAYS end (stops voice)
     wasLongPress.current = false;
   };
+
+
 
   const handleLeaveOrCancel = () => {
     if (holdTimer.current) {

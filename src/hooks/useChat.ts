@@ -5,14 +5,15 @@ import type { KaiOrbMode } from "../components/BottomPannel/KaiOrb";
 type Message = {
   role: "user" | "assistant";
   text: string;
-  image?: string;
-  file?: File;
 };
 
-export function useChat(
-  apiUrl: string,
-  getToken: () => string | undefined
-) {
+type ChatState = {
+  intent?: string;
+  awaiting?: "scope" | null;
+  scope?: "calendar" | null;
+};
+
+export function useChat(apiUrl: string) {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
@@ -22,50 +23,48 @@ export function useChat(
 
   const [input, setInput] = useState("");
   const [mode, setMode] = useState<KaiOrbMode>("idle");
+  const [state, setState] = useState<ChatState>({});
+  const [isSending, setIsSending] = useState(false); // ✅ THIS IS THE KEY
 
   const sendMessage = async () => {
-  if (!input.trim()) return;
+    if (!input.trim()) return;
 
-  const userText = input.trim();
+    const userText = input.trim();
 
-  setMessages((prev) => [...prev, { role: "user", text: userText }]);
-  setInput("");
-  setMode("text");
+    setMessages((prev) => [...prev, { role: "user", text: userText }]);
+    setInput("");
 
-  try {
-    const res = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        // ❌ NO Authorization header in dev
-      },
-      body: JSON.stringify({ message: userText }),
-    });
+    setIsSending(true);      // ✅ START DOTS
+    setMode("text");         // orb stays calm
 
-    if (!res.ok) {
-      throw new Error(`API error ${res.status}`);
+    try {
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userText, state }),
+      });
+
+      const data = await res.json();
+
+      if (data.new_state) setState(data.new_state);
+      if (data.clear_state) setState({});
+
+      if (data.reply) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", text: data.reply },
+        ]);
+      }
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", text: "⚠️ Something went wrong." },
+      ]);
+    } finally {
+      setIsSending(false);   // ✅ STOP DOTS (ONLY HERE)
+      setMode("idle");
     }
-
-    const data = await res.json();
-
-    setMessages((prev) => [
-      ...prev,
-      { role: "assistant", text: data.reply },
-    ]);
-  } catch (err) {
-    console.error(err);
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "assistant",
-        text: "⚠️ Something went wrong talking to the server.",
-      },
-    ]);
-  } finally {
-    setMode("idle");
-  }
-};
-
+  };
 
   return {
     messages,
@@ -74,5 +73,6 @@ export function useChat(
     mode,
     setMode,
     sendMessage,
+    isSending,               // ✅ EXPOSE THIS
   };
 }

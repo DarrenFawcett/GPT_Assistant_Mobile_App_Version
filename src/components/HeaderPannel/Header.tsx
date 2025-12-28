@@ -13,7 +13,7 @@ export function Header() {
         {/* TEXT */}
         <div style={{ fontFamily: "'Google Sans Flex'" }}>
           <h1 className="text-5xl md:text-5xl font-black text-white tracking-tight leading-none">
-            kAI — Your AI Assistant #1
+            kAI — Your AI Assistant
           </h1>
           <p className="text-lg md:text-2xl text-cyan-400 font-medium mt-1">
             Chat smarter • Stay organized • Get things done • Get your time back

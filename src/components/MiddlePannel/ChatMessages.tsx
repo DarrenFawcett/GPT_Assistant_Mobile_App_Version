@@ -55,10 +55,8 @@ export default function ChatMessages({
       })}
 
       {isThinking && (
-        <div className="flex justify-start">
-          <div className="px-5 py-3 rounded-2xl rounded-bl-none bg-white/10 border border-white/20 backdrop-blur-xl">
-            <ThinkingDots />
-          </div>
+        <div className="flex justify-start pl-4">
+          <ThinkingDots />
         </div>
       )}
 

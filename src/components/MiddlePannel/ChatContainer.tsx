@@ -37,18 +37,10 @@ export default function ChatContainer({ messages = [], isThinking = false }: Pro
         })}
 
         {isThinking && (
-          <div className="flex justify-start">
-            <div
-              className="px-8 py-6 rounded-3xl rounded-bl-none
-                        bg-gradient-to-r from-purple-600/50 to-pink-600/50
-                        backdrop-blur-xl border border-white/10
-                        shadow-2xl"
-            >
-              <TypingDots color="#fff" />
-            </div>
+          <div className="flex justify-start pl-6">
+            <TypingDots color="#af27b2ff" />
           </div>
         )}
-
 
         <div ref={bottomRef} />
       </div>
